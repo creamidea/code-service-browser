@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="./output/index.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <script>
-        const code = `(async () => {
+      const code = `(async () => {
   const root = document.getElementById('root');
+  console.log(root?.aaa)
   window.ReactDOM.render((
     <div>
       <IddDesign.Button>Direct</IddDesign.Button>
     </div>
   ), root);
 })();
-`
-        const errors = window.Linter.linter.verifyAndFix(code, window.Linter.config, { filename: 'index.js' })
-        console.log('Errors:', errors)
+`;
+      const output = window.Linter.linter.verifyAndFix(
+        code,
+        window.Linter.config,
+        {
+          filename: "index.js",
+        }
+      );
+      console.log("Errors:", output);
     </script>
-</body>
+  </body>
 </html>
