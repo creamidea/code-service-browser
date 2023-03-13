@@ -5,9 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <script src="./output/index.js"></script>
   </head>
   <body>
+    <button onclick="console.log(123)">click</button>
+    <div id="timer">0</div>
+    <script>
+      setInterval(() => {
+        document.getElementById('timer').innerText = Date.now()
+      }, 100)
+    </script>
     <script>
       const code = `(async () => {
   const root = document.getElementById('root');
@@ -19,14 +25,13 @@
   ), root);
 })();
 `;
-      const output = window.Linter.linter.verifyAndFix(
-        code,
-        window.Linter.config,
-        {
-          filename: "index.js",
-        }
-      );
-      console.log("Errors:", output);
+      (async () => {
+        console.time('timeout')
+        await new Promise((resolve) => {
+          setTimeout(resolve, 4000)
+        })
+        console.timeEnd('timeout')
+      })()
     </script>
   </body>
 </html>

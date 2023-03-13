@@ -1,33 +1,43 @@
-import { Linter } from 'eslint-linter-browserify';
+import { verifyAndFix } from './lint';
 
-import * as bpConfig from 'eslint-config-airbnb-base/rules/best-practices';
-import * as es6Config from 'eslint-config-airbnb-base/rules/es6';
-import * as styleConfig from 'eslint-config-airbnb-base/rules/style';
-import * as errorsConfig from 'eslint-config-airbnb-base/rules/errors';
-import * as strictConfig from 'eslint-config-airbnb-base/rules/strict';
-import * as varConfig from 'eslint-config-airbnb-base/rules/variables';
+const { self } = window;
 
-export const linter = new Linter();
-
-const rules = {
-  ...bpConfig.rules,
-  ...es6Config.rules,
-  ...styleConfig.rules,
-  ...errorsConfig.rules,
-  ...strictConfig.rules,
-  ...varConfig.rules,
+self.onmessage = (event) => {
+  const { workType, workParams, workId } = event.data;
+  switch (workType) {
+    case 'lint': {
+      // TODO: 增加对工作负载的校验
+      const output = verifyAndFix(
+        workParams?.code,
+        workParams.config,
+        workParams?.options,
+      );
+      self.postMessage({
+        workId,
+        workType,
+        workPayload: output,
+      });
+      break;
+    }
+    default:
+      break;
+  }
 };
 
-export const config = {
-  rules,
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
-    },
-  },
-  env: {
-    browser: true,
-  },
-};
+export async function lint(code, config, options) {
+  return new Promise((resolve) => {
+    console.time('create lint work');
+    const worker = new Worker('./lint.worker.js');
+    console.timeEnd('create lint work');
+    worker.onmessage = (event) => {
+      resolve(event.data);
+      // console.log(event.data)
+    };
+    worker.postMessage({
+      workType: 'lint',
+      workParams: {
+        code,
+      },
+    });
+  });
+}
